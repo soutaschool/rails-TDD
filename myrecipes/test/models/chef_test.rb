@@ -2,67 +2,60 @@ require 'test_helper'
 
 class ChefTest < ActiveSupport::TestCase
   def setup
-  	@chef = Chef.new(chefname: "mashrur", email: "mashrur@example.com")
+    @chef = Chef.new(chefname: "mashrur", email: "mashrur@example.com")
   end
 
-  test "should be volid" do
-  	assert @chef.valid?
-  	# ここのスペルはoではなくてaである
+  test "should be valid" do
+    assert @chef.valid?
   end
-
+  
   test "name should be present" do
-  	@chef.chefname = " "
-  	# 上の文章で条件を指定してあげる
-  	assert_not @chef.valid?
-  	# ここの部分で判定をする
+    @chef.chefname = " "
+    assert_not @chef.valid?
   end
-
+  
   test "name should be less than 30 characters" do
-  	@chef.chefname = "a" * 31
-  	assert_not @chef.valid?
+    @chef.chefname = "a" * 31
+    assert_not @chef.valid?
   end
-
-  test "email should be present " do
-  	@chef.email = " "
-  	assert_not @chef.valid?
+  
+  test "email should be present" do
+    @chef.email = " "
+    assert_not @chef.valid?
   end
-
+  
   test "email should not be too long" do
-  	# ここの文章を長くするべきではない
-  	@chef.email = "a" * 245 + "@example.com"
-  	assert_not @chef.valid?
+    @chef.email = "a" * 245 + "@example.com"
+    assert_not @chef.valid?
   end
-
+  
   test "email should accept correct format" do
-  	# メールを正しい形式で受け取ることができているかどうか（正規表現）
-  	valid_emails = %w[user@example.com MASHRUR@gmail.com M.first@yahoo.ca john+smith@co.uk.org]
-  	# johnとsmithの間にはスペースを入れてはいけない
-  	valid_emails.each do |valids|
-	  	@chef.email = valids
-	  	assert @chef.valid?, "#{valids.inspect} should be valid"
-	end
+    valid_emails = %w[user@example.com MASHRUR@gmail.com M.first@yahoo.ca john+smith@co.uk.org]
+    valid_emails.each do |valids|
+      @chef.email = valids
+      assert @chef.valid?, "#{valids.inspect} should be valid"
+    end
   end
-
+  
   test "should reject invalid addresses" do
-  	invalid_emails = %w[mashrur@example mashuru@example,com mashuru.name@gmail. joe@bar+foo.com]
-  	invalid_emails.each do |invalids|
-  		@chef.email = invalids
-  		assert_not @chef.valid?, "#{invalids.inspect} should be invalid"
-  		# ””＃の次の部分は
-  	end
-  end
-
+    invalid_emails = %w[mashrur@example mashrur@example,com mashrur.name@gmail. joe@bar+foo.com]
+    invalid_emails.each do |invalids|
+      @chef.email = invalids
+      assert_not @chef.valid?, "#{invalids.inspect} should be invalid"
+    end
+  end 
+  
   test "email should be unique and case insensitive" do
-  	duplicate_chef = @chef.dup
-  	duplicate_chef.email = @chef.email.upcase
-  	@chef.save
-  	assert_not duplicate_chef.valid?
+    duplicate_chef = @chef.dup
+    duplicate_chef.email = @chef.email.upcase
+    @chef.save
+    assert_not duplicate_chef.valid?
   end
 
-  test "email should be lower case before hitting db " do
-    mixed_email = "JohN@Example.com"
+  test "email should be lower case before hitting db" do
+    mixed_email = "JohN@ExampLe.com"
     @chef.email = mixed_email
     @chef.save
-    assert_equal mixed_email.downcase, @chef.reload.email
+    assert_equal mixed_email.downcase, @chef.reload.email 
   end
 end
